@@ -5,12 +5,14 @@ const charset = require("superagent-charset");
 const superagent = charset(require("superagent"));
 const app = new Koa();
 const router = new Router();
-let domain = "http://www.ccgp-shandong.gov.cn";
+
+let domain = "http://www.weibo.cn";
 let ListUrl =
-  "http://www.ccgp-shandong.gov.cn/sdgp2017/site/listnew.jsp?grade=province&colcode=0302";
+  "http://www.weibo.cn?grade=province&colcode=0302";
 let detailUrl =
-  "http://www.ccgp-shandong.gov.cn/sdgp2017/site/listcontnew.jsp?colcode=0302&id=";
+  "http://www.weibo.cn?colcode=0302&id=";
 // let keywords = "工程,西楼";
+
 let keywords = "工1程,西1楼";
 // let ret = await Fruit.sync();
 // console.log("sync", ret);
