@@ -1,17 +1,12 @@
 const cheerio = require("cheerio")
 const charset = require("superagent-charset")
 const superagent = charset(require("superagent"))
-// let domain = "http://www.baidu.com"
-// let ListUrl =
-//   "http://www.baidu.com/sdgp2017/site/listnew.jsp?grade=province&colcode=0302"
-// let detailUrl =
-//   "http://www.baidu.com/sdgp2017/site/listcontnew.jsp?colcode=0302&id="
-let domain = "http://www.ccgp-shandong.gov.cn"
 let ListUrl =
-  "http://www.ccgp-shandong.gov.cn/sdgp2017/site/listnew.jsp?grade=province&colcode=0302"
+  "http://www.baidu.com/sdgp2017/site/listnew.jsp?grade=province&colcode=0302"
 let detailUrl =
-  "http://www.ccgp-shandong.gov.cn/sdgp2017/site/listcontnew.jsp?colcode=0302&id="
-let keywords = "工程,西楼"
+  "http://www.baidu.com/sdgp2017/site/listcontnew.jsp?colcode=0302&id="
+
+let keywords = "大学"
 const spider = (ListModel) => {
   // 列表页面
   superagent
@@ -39,9 +34,16 @@ const spider = (ListModel) => {
           // res首个匹配项，若没有则为null
           if (res) {
             console.log(res.get())
+            // 第一项的内容一在数据库存在，清空数据库的旧纪录
+            // ListModel.destroy({
+            //   where: {
+            //     id: {
+            //       $lt: Number(firstId)
+            //     }
+            //   }
+            // });
           } else {
             // 遍历所有dom
-            console.log("have update")
             // 数据数组
             const arr = eachDomLi($, lis)
             console.log("have update", arr.length)
@@ -61,6 +63,7 @@ const eachListData = (arr, ListModel) => {
       let res = await ListModel.findOne({ where: { id: i.id } })
       if (res) {
         // 已记录 无需处理
+          console.log('has exist')
       } else {
         try {
           let ret = await getDetail(
@@ -69,15 +72,17 @@ const eachListData = (arr, ListModel) => {
             keywords
           )
           if (ret) {
-            console.log("get detail", ret.text.substr(0,20))
             if (ret.has) {
-              i.isavail = 1  // 符合要求  0 不符合 1 符合  2 已发送提醒
+              i.isavail = 1 // 符合要求  0 不符合 1 符合  2 已发送提醒
               console.log("get detail yes", i)
+            }else{
+              i.isavail = 0
             }
-            let insert = ListModel.create(i)
-            console.log("insert", insert)
+            ListModel.create(i)
           }
-        } catch (err) {}
+        } catch (err) {
+          console.log('get detail err',err)
+        }
       }
     })()
   }
@@ -85,6 +90,7 @@ const eachListData = (arr, ListModel) => {
 // 抓取详情
 const getDetail = (url, selector, keywords) => {
   // if(!url)return
+  console.log('getDetail',url, selector, keywords )
   return new Promise((resolve, reject) => {
     superagent
       .get(url)
@@ -96,7 +102,6 @@ const getDetail = (url, selector, keywords) => {
         }
         if (data) {
           let html = data.text
-          // console.log("detail", html);
           const $ = cheerio.load(html, {
             decodeEntities: false,
             ignoreWhitespace: false,
@@ -116,7 +121,7 @@ const getDetail = (url, selector, keywords) => {
           if (has) {
             resolve({ has: has, text: text })
           } else {
-            reject()
+            resolve({ has: false, text: text })
           }
         }
       })

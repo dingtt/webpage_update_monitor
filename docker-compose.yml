@@ -1,43 +1,26 @@
-version: '3.1'
+version: "3.1"
 services:
-  app-pm2:
-      container_name: app-pm2
-      build: .
-      volumes:
-        # - ./:/usr/src/watchweb
-        - /wwwroot/watch:/usr/src/app
-        # - /data/watch:/usr/src/app
-        # - .:/usr/src/app
-        # - /mnt/data/watch:/user/src/watchweb
-      ports:
-        - "3000:3000"
   mysql:
-      container_name: mysql-watch        # container name
-      image: mysql:5.7                # images version
-      ports:
-        - "3306:3306"
-      environment:
-        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-        MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
-      volumes:
-        - "${MYSQL_DIR}/data:/var/lib/mysql"           # data
-        - "${MYSQL_DIR}/config:/etc/mysql/conf.d"      # config
-  # mongo:
-  #   image: mongo
-  #   restart: always
-  #   ports:
-  #     - 27017:27017
-  # mongo-express:
-  #   image: mongo-express
-  #   restart: always 
-  #   ports:
-  #     - 8081:8081
-  # nginx:
-  #   restart: always
-  #   image: nginx
-  #   ports:
-  #     - 8091:80
-  #   volumes:
-  #     - ./nginx/conf.d/:/etc/nginx/conf.d
-  #     - ./frontend/dist/:/var/www/html/
-  #     - ./static/:/static/
+    container_name: mysql-watch # container name
+    image: mysql:5.7 # images version
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - "${MYSQL_DIR}/data:/var/lib/mysql"
+      - "${MYSQL_DIR}/config:/etc/mysql/conf.d"
+  app-pm2:
+    container_name: app-pm2
+    build: .
+    # volumes:
+    # - /wwwroot/watch:/usr/src/app
+    ports:
+      - "3000:3000"
+    links:
+      - mysql:mysql
+    depends_on:
+      - mysql

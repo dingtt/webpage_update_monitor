@@ -1,5 +1,5 @@
 apps:
-  - script : app2.js
+  - script : app.js
     instances: 1
     watch  : true
     env    :
