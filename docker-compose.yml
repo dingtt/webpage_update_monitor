@@ -1,22 +1,27 @@
 version: "3.1"
 services:
   mysql:
-    container_name: mysql-watch # container name
+    container_name: mysql-watch2 # container name
     image: mysql:5.7 # images version
     ports:
       - "3306:3306"
     environment:
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      # MYSQL_USER: ${MYSQL_USER}
+      # MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      # MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
+      # MYSQL_DATABASE: ${MYSQL_DATABASE}
+        MYSQL_ROOT_PASSWORD: 'xiaoyan106'
+        MYSQL_DATABASE: ‘watch'
     volumes:
-      - "${MYSQL_DIR}/data:/var/lib/mysql"
-      - "${MYSQL_DIR}/config:/etc/mysql/conf.d"
+        # - "${MYSQL_DIR}/data:/var/lib/mysql"           # data
+        # - "${MYSQL_DIR}/config:/etc/mysql/conf.d"      # config
+        - "./mysql/data:/var/lib/mysql"           # data
+        - "./mysql/config:/etc/mysql/conf.d"      # config
   app-pm2:
     container_name: app-pm2
     build: .
-    # volumes:
+    volumes:
+      - /etc/localtime:/etc/localtime
     # - /wwwroot/watch:/usr/src/app
     ports:
       - "3000:3000"
