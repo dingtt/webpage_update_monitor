@@ -4,8 +4,12 @@ dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-app0.js
-app2.js
+config/
+.env
+.history/
+mysql/data/
+mysql/logs
+
 # Editor directories and files
 .idea
 *.suo
